@@ -1,46 +1,50 @@
 import 'package:flutter/material.dart';
+import 'package:redux/redux.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'actions.dart';
+import 'reducer.dart';
 
 void main() {
-  runApp(MyApp());
+  // Create store and apply middleware
+  final store = Store(
+    counterReducer,
+    initialState: 0,
+  );
+
+  runApp(MyApp(store: store));
 }
 
 class MyApp extends StatelessWidget {
+  final Store store;
+
+  MyApp({Key key, this.store}) : super(key: key);
+
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
-    );
+    return new StoreProvider(
+        store: store,
+        child: MaterialApp(
+          title: 'Redux Saga Counter Demo',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+          ),
+          home: MyHomePage(title: 'Flutter Redux Saga Counter Demo'),
+        ));
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatelessWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(title),
       ),
       body: Center(
         child: Column(
@@ -49,15 +53,43 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               'You have pushed the button this many times:',
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+            StoreConnector<dynamic, String>(
+              converter: (store) => store.state.toString(),
+              builder: (context, count) {
+                return new Text(
+                  count,
+                  style: Theme.of(context).textTheme.headline4,
+                );
+              },
+            ),
+            RaisedButton(
+              onPressed: () => StoreProvider.of(context).dispatch(IncrementAction()),
+              child: Text('Increase'),
+            ),
+            RaisedButton(
+              onPressed: () => StoreProvider.of(context).dispatch(DecrementAction()),
+              child: Text('Decrease'),
+            ),
+            StoreConnector<dynamic, VoidCallback>(
+              converter: (store) {
+                return () {
+                  if (store.state % 2 != 0) {
+                    store.dispatch(IncrementAction());
+                  }
+                };
+              },
+              builder: (context, callback) {
+                return RaisedButton(
+                  onPressed: callback,
+                  child: Text('IncreamentIfOdd'),
+                );
+              },
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: () => StoreProvider.of(context).dispatch(IncrementAction()),
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ),

@@ -1,5 +1,5 @@
 name: redux_saga_beginner_tutorial
-description: A new Flutter project.
+description: Redux Saga Beginner Tutorial
 
 publish_to: 'none'
 
@@ -11,7 +11,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  redux: ^4.0.0
+  flutter_redux: ^0.6.0
 
   cupertino_icons: ^0.1.3
 
