@@ -3,13 +3,22 @@ import 'package:redux/redux.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'actions.dart';
 import 'reducer.dart';
+import 'package:redux_saga/redux_saga.dart';
+import 'sagas.dart';
 
 void main() {
+  var sagaMiddleware = createSagaMiddleware();
+
   // Create store and apply middleware
   final store = Store(
     counterReducer,
     initialState: 0,
+    middleware: [applyMiddleware(sagaMiddleware)],
   );
+
+  sagaMiddleware.setStore(store);
+
+  sagaMiddleware.run(rootSaga);
 
   runApp(MyApp(store: store));
 }
@@ -85,6 +94,11 @@ class MyHomePage extends StatelessWidget {
                 );
               },
             ),
+            //add button here
+            RaisedButton(
+              onPressed: () => StoreProvider.of(context).dispatch(IncrementAsyncAction()),
+              child: Text('IncrementAsync'),
+            )
           ],
         ),
       ),
