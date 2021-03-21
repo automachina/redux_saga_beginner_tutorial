@@ -26,7 +26,7 @@ void main() {
 class MyApp extends StatelessWidget {
   final Store store;
 
-  MyApp({Key key, this.store}) : super(key: key);
+  MyApp({required this.store}) : super();
 
   // This widget is the root of your application.
   @override
@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatelessWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({required this.title}) : super();
 
   final String title;
 
@@ -71,11 +71,11 @@ class MyHomePage extends StatelessWidget {
                 );
               },
             ),
-            RaisedButton(
+            ElevatedButton(
               onPressed: () => StoreProvider.of(context).dispatch(IncrementAction()),
               child: Text('Increase'),
             ),
-            RaisedButton(
+            ElevatedButton(
               onPressed: () => StoreProvider.of(context).dispatch(DecrementAction()),
               child: Text('Decrease'),
             ),
@@ -88,14 +88,14 @@ class MyHomePage extends StatelessWidget {
                 };
               },
               builder: (context, callback) {
-                return RaisedButton(
+                return ElevatedButton(
                   onPressed: callback,
                   child: Text('IncreamentIfOdd'),
                 );
               },
             ),
             //add button here
-            RaisedButton(
+            ElevatedButton(
               onPressed: () => StoreProvider.of(context).dispatch(IncrementAsyncAction()),
               child: Text('IncrementAsync'),
             )
